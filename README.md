@@ -1,3 +1,17 @@
+```markdown
+# @todo
+- balance check
+    - [ ] add secret handler/transformer
+    - [ ] roll this into balance checker for individual chains
+    - [ ] test with different llm models
+    - [ ] reduce false positives
+    - [ ] ensure we are only digesting the most recent commits possible
+- scale
+    - [ ] add token rotation or some other circumvention for rate limitations
+```
+
+---
+
 this project is an automated detection and notification system designed to find exposed cryptocurrency private keys and seed phrases in public github repositories in real-time. it uses a multi-stage pipeline, combining fast initial scanning with powerful large language model (llm) analysis to ensure high accuracy and performance.
 
 ## features
@@ -10,7 +24,7 @@ this project is an automated detection and notification system designed to find 
 - **actionable output:** provides clear, color-coded logs and saves the full content of any detected leak to a local directory with a detailed metadata header for easy review.
 - **comprehensive test suite:** includes an accuracy test suite to verify the performance of the llm and the detection logic.
 
-## about 
+## about
 
 the scanner operates on a fully parallel, multi-stage pipeline for maximum efficiency:
 
@@ -20,7 +34,7 @@ the scanner operates on a fully parallel, multi-stage pipeline for maximum effic
 4.  **parallel llm analysis:** a pool of background worker threads consumes files from the queue, sending all potential leaks from each file to the llm for analysis in parallel.
 5.  **logging & saving:** if the llm confirms a `real_key`, the finding is logged, and the full file is saved to the `detected_leaks` directory for review.
 
-## getting started 
+## getting started
 
 1.  **clone the repository:**
     ```bash
@@ -67,4 +81,4 @@ the scanner operates on a fully parallel, multi-stage pipeline for maximum effic
     python3.9 tests/test_accuracy.py
     ```
 
-while the scanner is running, you can press `s` followed by `enter` to skip the rest of the files in the current repository and move on to the next one. 
+while the scanner is running, you can press `s` followed by `enter` to skip the rest of the files in the current repository and move on to the next one.
