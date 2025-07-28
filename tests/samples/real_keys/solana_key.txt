@@ -1,0 +1,4 @@
+# This is a real (but invalidated) Solana private key.
+# It should be detected as REAL_KEY (Solana).
+
+solana_private_key = "a2aa10aQgqcK4BJqKXpqM7iBaF8EyhRMR49vgktpG3b1NGkSXDbzacga3Vcu" 

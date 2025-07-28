@@ -1,0 +1,35 @@
+# --- DETECTION METADATA ---
+# File Path: v1/timestamp.json
+# File Size: 0.00 KB
+# Raw URL: https://github.com/macad-me/sofa-deployment-test/raw/f143ed962cf9aaeb2fcb09b0ff9ba629d58477a8/v1%2Ftimestamp.json
+#
+# Detections:
+# - Line 4: REAL_KEY (Ethereum) -> "        "UpdateHash": "d608a0291584ad1126830a92c286b4bceb7d0987e4ea0fdd7c36..."
+# - Line 8: REAL_KEY (Ethereum hex key) -> "        "UpdateHash": "7d33cc7e2049b16a40062c80f19a49c53e1fbb7ce39cbaccab1f..."
+# - Line 12: REAL_KEY (Ethereum) -> "        "UpdateHash": "242c1eab9b4f3a6bf562b4056d4b553214e3fe4aa55b93336e9d..."
+# - Line 16: REAL_KEY (Ethereum) -> "        "UpdateHash": "242c1eab9b4f3a6bf562b4056d4b553214e3fe4aa55b93336e9d..."
+# - Line 20: REAL_KEY (Ethereum) -> "        "UpdateHash": "242c1eab9b4f3a6bf562b4056d4b553214e3fe4aa55b93336e9d..."
+# --- END METADATA ---
+
+{
+    "macOS": {
+        "LastCheck": "2025-07-28T18:38:58+00:00Z",
+        "UpdateHash": "d608a0291584ad1126830a92c286b4bceb7d0987e4ea0fdd7c36a9eae941b9fa"
+    },
+    "iOS": {
+        "LastCheck": "2025-07-28T18:39:14+00:00Z",
+        "UpdateHash": "7d33cc7e2049b16a40062c80f19a49c53e1fbb7ce39cbaccab1fe78aa2357732"
+    },
+    "24B83": {
+        "LastCheck": "2025-04-03T04:37:28+00:00Z",
+        "UpdateHash": "242c1eab9b4f3a6bf562b4056d4b553214e3fe4aa55b93336e9d1722ff3d57f5"
+    },
+    "24B2083": {
+        "LastCheck": "2024-11-03T10:36:28+00:00Z",
+        "UpdateHash": "242c1eab9b4f3a6bf562b4056d4b553214e3fe4aa55b93336e9d1722ff3d57f5"
+    },
+    "": {
+        "LastCheck": "2025-07-28T18:39:25+00:00Z",
+        "UpdateHash": "242c1eab9b4f3a6bf562b4056d4b553214e3fe4aa55b93336e9d1722ff3d57f5"
+    }
+}

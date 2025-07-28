@@ -1,0 +1,5 @@
+# This is an example key for testing purposes.
+# It is clearly marked as a test key and should be detected as TEST_KEY.
+
+TEST_ETHEREUM_KEY="0x________________________________________________________________"
+EXAMPLE_SEED_PHRASE="test seed phrase example twelve words to make up a sentence" 

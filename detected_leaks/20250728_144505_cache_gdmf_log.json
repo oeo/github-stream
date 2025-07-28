@@ -1,0 +1,77 @@
+# --- DETECTION METADATA ---
+# File Path: cache/gdmf_log.json
+# File Size: 0.00 KB
+# Raw URL: https://github.com/macad-me/sofa-deployment-test/raw/f143ed962cf9aaeb2fcb09b0ff9ba629d58477a8/cache%2Fgdmf_log.json
+#
+# Detections:
+# - Line 4: REAL_KEY (Ethereum) -> "        "UpdateHash": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f40558049..."
+# --- END METADATA ---
+
+{
+    "latest_etag": {
+        "LastCheck": "2025-07-28T18:39:25+00:00Z",
+        "UpdateHash": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8"
+    },
+    "log": [
+        {
+            "timestamp": "2025-07-28T18:39:25+00:00Z",
+            "new_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8",
+            "status": "success (200)",
+            "previous_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8"
+        },
+        {
+            "timestamp": "2025-07-28T18:39:04+00:00Z",
+            "new_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8",
+            "status": "success (200)",
+            "previous_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8"
+        },
+        {
+            "timestamp": "2025-07-28T18:38:41+00:00Z",
+            "new_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8",
+            "status": "success (200)",
+            "previous_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8"
+        },
+        {
+            "timestamp": "2025-07-28T17:26:45+00:00Z",
+            "new_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8",
+            "status": "success (200)",
+            "previous_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8"
+        },
+        {
+            "timestamp": "2025-07-28T17:26:17+00:00Z",
+            "new_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8",
+            "status": "success (200)",
+            "previous_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8"
+        },
+        {
+            "timestamp": "2025-07-28T17:25:43+00:00Z",
+            "new_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8",
+            "status": "success (200)",
+            "previous_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8"
+        },
+        {
+            "timestamp": "2025-07-28T16:54:21+00:00Z",
+            "new_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8",
+            "status": "success (200)",
+            "previous_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8"
+        },
+        {
+            "timestamp": "2025-07-28T16:53:52+00:00Z",
+            "new_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8",
+            "status": "success (200)",
+            "previous_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8"
+        },
+        {
+            "timestamp": "2025-07-28T16:53:11+00:00Z",
+            "new_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8",
+            "status": "success (200)",
+            "previous_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8"
+        },
+        {
+            "timestamp": "2025-07-28T13:13:45+00:00Z",
+            "new_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8",
+            "status": "success (200)",
+            "previous_etag": "f64ebdcfa3546a9785d65e06a7018a4ae986e36c381f405580496cebdfe717a8"
+        }
+    ]
+}

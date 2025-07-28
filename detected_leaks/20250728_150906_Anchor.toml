@@ -1,0 +1,62 @@
+# --- DETECTION METADATA ---
+# File Path: Anchor.toml
+# File Size: 0.00 KB
+# Raw URL: https://github.com/metaDAOproject/futarchy/raw/5af91dc86d498c4415c5631381a9a335926a9ac7/Anchor.toml
+#
+# Detections:
+# - Line 8: REAL_KEY (Bitcoin WIF) -> "amm = "AMMJdEiCCa8mdugg6JPF7gFirmmxisTfDJoSNSUi5zDJ""
+# - Line 12: REAL_KEY (Bitcoin WIF) -> "shared_liquidity_manager = "EoJc1PYxZbnCjszampLcwJGYcB5Md47jM4oSQacRtD4d""
+# --- END METADATA ---
+
+[toolchain]
+
+[features]
+seeds = false
+skip-lint = false
+
+[programs.localnet]
+amm = "AMMJdEiCCa8mdugg6JPF7gFirmmxisTfDJoSNSUi5zDJ"
+autocrat = "auToUr3CQza3D4qreT6Std2MTomfzvrEeCC5qh7ivW5"
+autocrat_migrator = "MigRDW6uxyNMDBD8fX2njCRyJC4YZk2Rx9pDUZiAESt"
+conditional_vault = "VLTX1ishMBbcX3rdBWGssxawAo1Q2X2qxYFYqiGodVg"
+shared_liquidity_manager = "EoJc1PYxZbnCjszampLcwJGYcB5Md47jM4oSQacRtD4d"
+launchpad = "mooNhciQJi1LqHDmse2JPic2NqG2PXCanbE3ZYzP3qA"
+optimistic_timelock = "tiME1hz9F5C5ZecbvE5z6Msjy8PKfTqo1UuRYXfndKF"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+add-v03-metadata = "yarn run tsx scripts/addV03Metadata.ts"
+add-v04-metadata = "yarn run tsx scripts/addV04Metadata.ts"
+create-proposal = "yarn run tsx scripts/v0.5/createProposal.ts"
+create-v04-dao = "yarn run tsx scripts/createV04DAO.ts"
+assign-permissionless-account = "yarn run tsx scripts/assignPermissionlessAccount.ts"
+create-v04-proposal = "yarn run tsx scripts/createV04Proposal.ts"
+initialize-launch = "yarn run tsx scripts/initializeLaunch.ts"
+test = "npx mocha --import=tsx --bail tests/main.test.ts"
+transfer = "yarn run tsx scripts/v0.5/createV05TransferProposal.ts"
+update-spending-limit = "yarn run tsx scripts/v0.5/updateV05SpendingLimit.ts"
+execute-v05-proposal = "yarn run tsx scripts/v0.5/executeV05Proposal.ts"
+use-spending-limit = "yarn run tsx scripts/v0.5/useSpendingLimit.ts"
+
+[test]
+startup_wait = 5000
+shutdown_wait = 2000
+upgradeable = false
+
+[[test.genesis]]
+address = "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb"
+program = "./tests/fixtures/openbook_v2.so"
+
+[[test.genesis]]
+address = "TWAP7frdvD3ia7TWc8e9SxZMmrpd2Yf3ifSPAHS8VG3"
+program = "./tests/fixtures/openbook_twap.so"
+
+[[test.genesis]]
+address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+program = "./tests/fixtures/mpl_token_metadata.so"

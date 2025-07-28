@@ -1,0 +1,4 @@
+# This is a real (but invalidated) Litecoin private key.
+# It should be detected as REAL_KEY.
+
+LITECOIN_WIF="T7d8L5kZp2hG2hZRzps2hG2hZRzps2hG2hZRzps2hG2hZRzps2hG2hZ" 
