@@ -26,7 +26,6 @@ The scanner operates on a fully parallel, multi-stage pipeline for maximum effic
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository_url>
     cd github-stream
     ```
 
@@ -69,4 +68,5 @@ The scanner operates on a fully parallel, multi-stage pipeline for maximum effic
     python3.9 tests/test_accuracy.py
     ```
 
-While the scanner is running, you can press `s` followed by `Enter` to skip the rest of the files in the current repository and move on to the next one. 
+While the scanner is running, you can press `s` followed by `Enter` to skip the rest of the files in the current repository and move on to the next one.
+
