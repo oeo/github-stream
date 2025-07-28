@@ -53,10 +53,14 @@ if not os.path.exists(LEAKS_DIR):
 
 def log_detection(key_type, file_path, line_number, match, raw_url, file_size):
     """Logs a detected key to the console and a file."""
-    # Convert file size to KB for readability
-    size_kb = file_size / 1024
+    # Format file size for readability
+    if file_size < 1024:
+        size_str = f"{file_size} B"
+    else:
+        size_str = f"{file_size / 1024:.2f} KB"
+        
     log_message = (
-        f"Detected {key_type} key in {file_path} (Size: {size_kb:.2f} KB) at line {line_number}: {match}\n"
+        f"Detected {key_type} in {file_path} (Size: {size_str}) at line {line_number}: {match}\n"
         f"  -> Raw file URL: {raw_url}"
     )
     print(f"{Colors.FAIL}{Colors.BOLD}[!] REAL KEY DETECTED:\n{log_message}{Colors.ENDC}")
@@ -70,11 +74,14 @@ def save_leaked_file(file_path, content, detections, raw_url, file_size):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         leak_file_path = os.path.join(LEAKS_DIR, f"{timestamp}_{safe_filename}")
         
-        size_kb = file_size / 1024
+        if file_size < 1024:
+            size_str = f"{file_size} B"
+        else:
+            size_str = f"{file_size / 1024:.2f} KB"
         
         header = "# --- DETECTION METADATA ---\n"
         header += f"# File Path: {file_path}\n"
-        header += f"# File Size: {size_kb:.2f} KB\n"
+        header += f"# File Size: {size_str}\n"
         header += f"# Raw URL: {raw_url}\n"
         header += "#\n"
         header += "# Detections:\n"
@@ -338,15 +345,21 @@ def monitor_github_events(verbose=False):
                                             files_to_process.append({
                                                 "filename": file_meta.get('filename'),
                                                 "raw_url": file_meta.get('raw_url'),
-                                                "file_size": file_meta.get('size', 0),
                                                 "content_data": content_data
                                             })
                                 
                                 # --- Stage 2: Local Analysis & Queueing for LLM ---
                                 for file_data in files_to_process:
+                                    # Now that we have the full content, we can get the true size
+                                    true_file_size = len(base64.b64decode(file_data['content_data']['content']))
+                                    file_data['file_size'] = true_file_size
+
                                     if verbose:
-                                        size_kb = file_data['file_size'] / 1024
-                                        print(f"    -> Scanning file: {file_data['filename']} ({size_kb:.2f} KB) ({Colors.UNDERLINE}{file_data['raw_url']}{Colors.ENDC})")
+                                        if true_file_size < 1024:
+                                            size_str = f"{true_file_size} B"
+                                        else:
+                                            size_str = f"{true_file_size / 1024:.2f} KB"
+                                        print(f"    -> Scanning file: {file_data['filename']} ({size_str}) ({Colors.UNDERLINE}{file_data['raw_url']}{Colors.ENDC})")
 
                                     decoded_content = base64.b64decode(file_data['content_data']['content']).decode('utf-8', 'ignore')
                                     potential_leaks = analyzer.find_potential_leaks(decoded_content)

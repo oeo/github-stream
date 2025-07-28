@@ -78,7 +78,13 @@ class LLMAnalyzer:
             exit(1)
 
     def _classify_with_huggingface(self, prompt):
-        generation_args = { "max_new_tokens": 5, "return_full_text": False, "do_sample": False }
+        generation_args = {
+            "max_new_tokens": 15,
+            "return_full_text": False,
+            "do_sample": True,
+            "temperature": 0.01,  # Near-zero temperature for deterministic output
+            "top_k": 1            # Only consider the most likely token
+        }
         output = self.pipe(prompt, **generation_args)
         return output[0]['generated_text'].strip()
 

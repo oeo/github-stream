@@ -1,0 +1,3 @@
+# Required libraries for the advanced proxy tester
+PySocks
+requests 
