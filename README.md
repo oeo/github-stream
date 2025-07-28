@@ -4,6 +4,7 @@
     - [ ] add secret handler/transformer
     - [ ] roll this into balance checker for individual chains
     - [ ] test with different llm models
+- [ ] correct filesize output bug in logs
 - [ ] improve log locations (centralize them and make them more useful)
 - [ ] reduce false positives
 - [ ] ensure we are only digesting the most recent commits possible
