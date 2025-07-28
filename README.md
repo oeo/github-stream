@@ -1,20 +1,23 @@
-```markdown
-# @todo
-- balance check
+```
+## @todo
+- [ ] balance check
     - [ ] add secret handler/transformer
     - [ ] roll this into balance checker for individual chains
     - [ ] test with different llm models
-    - [ ] reduce false positives
-    - [ ] ensure we are only digesting the most recent commits possible
-- scale
+- [ ] improve log locations (centralize them and make them more useful)
+- [ ] reduce false positives
+- [ ] ensure we are only digesting the most recent commits possible
+- [ ] scale
     - [ ] add token rotation or some other circumvention for rate limitations
 ```
 
 ---
 
+## briefly
+
 this project is an automated detection and notification system designed to find exposed cryptocurrency private keys and seed phrases in public github repositories in real-time. it uses a multi-stage pipeline, combining fast initial scanning with powerful large language model (llm) analysis to ensure high accuracy and performance.
 
-## features
+## what we got
 
 - **real-time monitoring:** scans new commits from the public github events api as they happen.
 - **intelligent analysis:** uses a fast local analyzer to find potential leaks, which are then verified by a powerful llm for high accuracy.
@@ -23,8 +26,6 @@ this project is an automated detection and notification system designed to find 
 - **interactive:** allows you to skip repositories on the fly and limits the number of files scanned per repository to avoid getting bogged down.
 - **actionable output:** provides clear, color-coded logs and saves the full content of any detected leak to a local directory with a detailed metadata header for easy review.
 - **comprehensive test suite:** includes an accuracy test suite to verify the performance of the llm and the detection logic.
-
-## about
 
 the scanner operates on a fully parallel, multi-stage pipeline for maximum efficiency:
 
@@ -37,24 +38,19 @@ the scanner operates on a fully parallel, multi-stage pipeline for maximum effic
 ## getting started
 
 1.  **clone the repository:**
-    ```bash
-    git clone <repository_url>
-    cd github-stream
-    ```
-
-2.  **install dependencies:**
+1.  **install dependencies:**
     ```bash
     pip install -r requirements.txt
     ```
 
-3.  **configure the scanner:**
+1.  **configure the scanner:**
     -   create a copy of the example configuration file:
         ```bash
         cp scanner/config.example.py scanner/config.py
         ```
     -   open `scanner/config.py` in your editor and add your **github personal access token**. a token with the `public_repo` scope is required.
 
-4.  **set up your llm provider:**
+1.  **set up your llm provider:**
     -   **ollama (recommended):**
         -   install ollama from [ollama.com](https://ollama.com).
         -   download the model you want to use (the default is `llama3:8b-instruct-q8_0`):
@@ -72,7 +68,7 @@ the scanner operates on a fully parallel, multi-stage pipeline for maximum effic
     ```bash
     python3.9 -m scanner.main
     ```
--   **run in verbose mode** for detailed logging:
+-   **run in verbose mode** for detailed logging (recommended):
     ```bash
     python3.9 -m scanner.main --verbose
     ```
@@ -82,3 +78,4 @@ the scanner operates on a fully parallel, multi-stage pipeline for maximum effic
     ```
 
 while the scanner is running, you can press `s` followed by `enter` to skip the rest of the files in the current repository and move on to the next one.
+
