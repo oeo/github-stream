@@ -361,12 +361,16 @@ def monitor_github_events(verbose=False):
                                 
                                 # --- Stage 2: Local Analysis & Queueing for LLM ---
                                 for file_data in files_to_process:
+                                    decoded_content = base64.b64decode(file_data['content_data']['content']).decode('utf-8', 'ignore')
+                                    true_file_size = len(decoded_content)
+                                    
                                     if verbose:
-                                        size_kb = file_data['file_size'] / 1024 if file_data['file_size'] > 0 else 0
-                                        size_str = f"{size_kb:.2f} KB" if size_kb >= 1 else f"{file_data['file_size']} B"
+                                        if true_file_size < 1024:
+                                            size_str = f"{true_file_size} B"
+                                        else:
+                                            size_str = f"{true_file_size / 1024:.2f} KB"
                                         print(f"    -> Scanning file: {file_data['filename']} ({size_str}) ({Colors.UNDERLINE}{file_data['raw_url']}{Colors.ENDC})")
 
-                                    decoded_content = base64.b64decode(file_data['content_data']['content']).decode('utf-8', 'ignore')
                                     potential_leaks = analyzer.find_potential_leaks(decoded_content)
                                     
                                     if potential_leaks:
@@ -374,12 +378,11 @@ def monitor_github_events(verbose=False):
                                         for key_type, line_num, match_content in potential_leaks:
                                             snippet = ""
                                             if key_type == "SEED_PHRASE":
-                                                snippet = match_content # Send full content for seed phrases
+                                                snippet = match_content
                                             else:
                                                 line = match_content
-                                                start = max(0, line.find(line.strip()) - 128)
-                                                end = min(len(line), start + 256)
-                                                snippet = line[start:end]
+                                                end = min(len(line), max(0, line.find(line.strip()) - 128) + 256)
+                                                snippet = line[max(0, line.find(line.strip()) - 128):end]
                                             
                                             snippets_for_llm.append({
                                                 "snippet": snippet, "line_num": line_num, "line": match_content,
@@ -390,7 +393,7 @@ def monitor_github_events(verbose=False):
                                             "file_path": file_data['filename'],
                                             "decoded_content": decoded_content,
                                             "raw_url": file_data['raw_url'],
-                                            "file_size": file_data['file_size'],
+                                            "file_size": true_file_size,
                                             "potential_leaks": snippets_for_llm
                                         })
 
