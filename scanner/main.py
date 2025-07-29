@@ -172,86 +172,23 @@ def llm_worker(llm_analyzer, verbose=False):
         
         llm_analysis_queue.task_done()
 
-def scan_content(analyzer, llm_analyzer, file_path, content_data, raw_url, file_size, verbose=False):
-    """Scans string content for secrets and uses LLM to verify."""
-    try:
-        if not content_data or 'content' not in content_data:
-            return
+def print_startup_info(args):
+    """Prints a summary of the current configuration."""
+    print(f"{Colors.HEADER}--- github-stream ---{Colors.ENDC}")
+    print(f"[{Colors.OKBLUE}INFO{Colors.ENDC}] Mode: {'Verbose' if args.verbose else 'Standard'}")
+    print(f"[{Colors.OKBLUE}INFO{Colors.ENDC}] LLM Provider: {LLM_PROVIDER}")
+    if LLM_PROVIDER == 'ollama':
+        print(f"[{Colors.OKBLUE}INFO{Colors.ENDC}] Ollama Model: {OLLAMA_CONFIG['model']}")
+    else:
+        print(f"[{Colors.OKBLUE}INFO{Colors.ENDC}] HuggingFace Model: {MODEL_CONFIGS[LLM_MODEL_KEY]['name']}")
+    print(f"[{Colors.OKBLUE}INFO{Colors.ENDC}] Worker Threads (CPUs): {args.cpus}")
+    print(f"[{Colors.OKBLUE}INFO{Colors.ENDC}] Max Files per Repo: {MAX_FILES_PER_REPO}")
+    print(f"{Colors.HEADER}---------------------------{Colors.ENDC}")
 
-        decoded_content = base64.b64decode(content_data['content']).decode('utf-8', 'ignore')
-        
-        # Check if we can do full-file analysis based on token count
-        if LLM_PROVIDER == 'huggingface':
-            max_tokens = MODEL_CONFIGS[LLM_MODEL_KEY]['max_tokens']
-        else: # ollama
-            max_tokens = OLLAMA_CONFIG['max_tokens']
 
-        num_tokens = 0
-        if SCAN_MODE == 'full_file_llm':
-            # We only need to tokenize if we're considering a full file scan
-            if LLM_PROVIDER == 'huggingface':
-                num_tokens = len(llm_analyzer.tokenizer.encode(decoded_content))
-            else:
-                # Ollama doesn't expose a tokenizer, so we'll estimate based on characters
-                num_tokens = len(decoded_content) / 4 
-        
-        can_do_full_scan = (SCAN_MODE == 'full_file_llm') and (num_tokens <= max_tokens)
-
-        if can_do_full_scan:
-            if verbose:
-                print(f"  -> {Colors.OKBLUE}Analyzing full file with LLM ({num_tokens} tokens)...{Colors.ENDC}")
-            classification = llm_analyzer.classify_file(decoded_content)
-            
-            if "NOT_KEY" not in classification:
-                if verbose:
-                    print(f"  -> {Colors.OKBLUE}LLM classification: {classification}{Colors.ENDC}")
-                if "REAL_KEY" in classification:
-                    detections = [{
-                        "classification": classification,
-                        "line_num": 1,
-                        "line": "Full file analysis matched."
-                    }]
-                    log_detection(classification, file_path, 1, "Full file analysis", raw_url, file_size)
-                    save_leaked_file(file_path, decoded_content, detections, raw_url, file_size)
-            return
-
-        # Fallback to local analyzer scanning
-        if SCAN_MODE == 'full_file_llm' and not can_do_full_scan:
-            if verbose:
-                print(f"  -> {Colors.WARNING}File too large for full LLM scan ({num_tokens} tokens > {max_tokens}). Falling back to regex mode.{Colors.ENDC}")
-
-        potential_leaks = analyzer.find_potential_leaks(decoded_content)
-        real_key_detections = []
-        
-        for line_num, line in potential_leaks:
-            # Create a snippet for the LLM
-            start = max(0, line.find(line.strip()) - 128)
-            end = min(len(line), start + 256)
-            snippet = line[start:end]
-
-            if verbose:
-                print(f"  -> {Colors.WARNING}Potential leak found. Analyzing with LLM...{Colors.ENDC}")
-            classification = llm_analyzer.classify_snippet(snippet)
-
-            if "NOT_KEY" not in classification:
-                if verbose:
-                    print(f"  -> {Colors.OKBLUE}LLM classification: {classification}{Colors.ENDC}")
-                if "REAL_KEY" in classification:
-                    real_key_detections.append({
-                        "classification": classification,
-                        "line_num": line_num,
-                        "line": line.strip()
-                    })
-                    log_detection(classification, file_path, line_num, line.strip(), raw_url, file_size)
-        
-        if real_key_detections:
-            save_leaked_file(file_path, decoded_content, real_key_detections, raw_url, file_size)
-
-    except Exception as e:
-        print(f"Error scanning content for {file_path}: {e}")
-
-def monitor_github_events(verbose=False):
+def monitor_github_events(args):
     """Monitors GitHub for new PushEvents and scans the associated file contents."""
+    verbose = args.verbose
     if GITHUB_TOKEN == "YOUR_NEW_GITHUB_TOKEN_HERE" or not GITHUB_TOKEN:
         print("Please add your GitHub token to scanner/config.py")
         return
@@ -261,7 +198,7 @@ def monitor_github_events(verbose=False):
     llm_analyzer = LLMAnalyzer(verbose=verbose)
 
     # Start the LLM worker threads
-    num_llm_workers = 4
+    num_llm_workers = args.cpus
     llm_workers = []
     for _ in range(num_llm_workers):
         worker = threading.Thread(target=llm_worker, args=(llm_analyzer, verbose), daemon=True)
@@ -335,7 +272,7 @@ def monitor_github_events(verbose=False):
                                 # --- Stage 1: Parallel Download ---
                                 files_to_process = []
                                 files_scanned = 0
-                                with ThreadPoolExecutor(max_workers=10) as executor:
+                                with ThreadPoolExecutor(max_workers=args.cpus * 2) as executor:
                                     future_to_file = {}
                                     for file in commit.files:
                                         if skip_repo.is_set() or files_scanned >= MAX_FILES_PER_REPO:
@@ -427,12 +364,22 @@ def monitor_github_events(verbose=False):
             time.sleep(60)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Scan GitHub for exposed private keys.")
+    parser = argparse.ArgumentParser(
+        description="Scan GitHub for exposed private keys in real-time.",
+        formatter_class=argparse.RawTextHelpFormatter
+    )
     parser.add_argument(
         "-v", "--verbose",
         action="store_true",
-        help="Enable verbose logging."
+        help="Enable verbose logging for detailed, real-time feedback."
+    )
+    parser.add_argument(
+        "--cpus",
+        type=int,
+        default=os.cpu_count(),
+        help="Number of CPU cores (worker threads) to use for parallel processing."
     )
     args = parser.parse_args()
 
-    monitor_github_events(verbose=args.verbose) 
+    print_startup_info(args)
+    monitor_github_events(args) 

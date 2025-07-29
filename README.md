@@ -1,4 +1,6 @@
-# Real-Time Cryptocurrency Private Key Scanner
+# github-stream
+
+![github-stream](https://i.imgur.com/abylhFq.png)
 
 This project is an automated detection system designed to find exposed cryptocurrency private keys and seed phrases in public GitHub repositories in real-time. It uses a highly efficient, multi-stage pipeline that combines fast local analysis with powerful Large Language Model (LLM) verification to ensure both high speed and high accuracy.
 
