@@ -17,6 +17,17 @@ import threading
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue
+import signal
+
+def signal_handler(sig, frame):
+    print(f"Caught signal {sig}")
+
+    # @todo: perform cleanup here
+
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler) # Also handle Ctrl+C
 
 # --- Global variable to control skipping ---
 skip_repo = threading.Event()
@@ -350,33 +361,37 @@ def monitor_github_events(verbose=False):
                                 
                                 # --- Stage 2: Local Analysis & Queueing for LLM ---
                                 for file_data in files_to_process:
-                                    # Now that we have the full content, we can get the true size
-                                    true_file_size = len(base64.b64decode(file_data['content_data']['content']))
-                                    file_data['file_size'] = true_file_size
-
                                     if verbose:
-                                        if true_file_size < 1024:
-                                            size_str = f"{true_file_size} B"
-                                        else:
-                                            size_str = f"{true_file_size / 1024:.2f} KB"
+                                        size_kb = file_data['file_size'] / 1024 if file_data['file_size'] > 0 else 0
+                                        size_str = f"{size_kb:.2f} KB" if size_kb >= 1 else f"{file_data['file_size']} B"
                                         print(f"    -> Scanning file: {file_data['filename']} ({size_str}) ({Colors.UNDERLINE}{file_data['raw_url']}{Colors.ENDC})")
 
                                     decoded_content = base64.b64decode(file_data['content_data']['content']).decode('utf-8', 'ignore')
                                     potential_leaks = analyzer.find_potential_leaks(decoded_content)
                                     
                                     if potential_leaks:
-                                        snippets = []
-                                        for line_num, line in potential_leaks:
-                                            end = min(len(line), max(0, line.find(line.strip()) - 128) + 256)
-                                            snippet = line[max(0, line.find(line.strip()) - 128):end]
-                                            snippets.append({"snippet": snippet, "line_num": line_num, "line": line})
+                                        snippets_for_llm = []
+                                        for key_type, line_num, match_content in potential_leaks:
+                                            snippet = ""
+                                            if key_type == "SEED_PHRASE":
+                                                snippet = match_content # Send full content for seed phrases
+                                            else:
+                                                line = match_content
+                                                start = max(0, line.find(line.strip()) - 128)
+                                                end = min(len(line), start + 256)
+                                                snippet = line[start:end]
+                                            
+                                            snippets_for_llm.append({
+                                                "snippet": snippet, "line_num": line_num, "line": match_content,
+                                                "key_type": key_type
+                                            })
                                         
                                         llm_analysis_queue.put({
                                             "file_path": file_data['filename'],
                                             "decoded_content": decoded_content,
                                             "raw_url": file_data['raw_url'],
                                             "file_size": file_data['file_size'],
-                                            "potential_leaks": snippets
+                                            "potential_leaks": snippets_for_llm
                                         })
 
                                 if files_scanned >= MAX_FILES_PER_REPO and verbose:

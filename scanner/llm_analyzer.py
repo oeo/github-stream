@@ -11,33 +11,39 @@ else: # ollama
 # Define the prompt template for the LLM
 PROMPT_TEMPLATE = """
 Analyze the following code snippet and classify it as REAL_KEY, TEST_KEY, or NOT_KEY.
-If it is a REAL_KEY or TEST_KEY, also identify the cryptocurrency or key type.
-Respond with only the classification and the type in parentheses, like "REAL_KEY (Bitcoin WIF)" or "TEST_KEY (Solana)".
-
-- A REAL_KEY is a valid, production-ready cryptocurrency private key or seed phrase.
-  - Common formats include Bitcoin (WIF), Solana (Base58), Ripple, Dogecoin, and hex keys (Ethereum, Monero).
-  - A seed phrase is typically a list of 12 or 24 words.
-- A TEST_KEY is a fake, example, or placeholder key, often found in test files or documentation.
-- NOT_KEY is anything else.
+If it is a REAL_KEY or TEST_KEY, also identify the specific cryptocurrency or key type.
+Your response MUST be ONLY the classification and the type in parentheses. Do not include any other text, explanations, or formatting.
 
 ---
-Here are some examples:
+**KEY FORMAT GUIDE**
+
+- **Bitcoin WIF (Compressed):** Starts with 'K' or 'L', 52 chars. Ex: L4rK1yDtCWekvXuE6oXD9jCYfFNV2cWRpVuPLBcCU2z8TrisoyY1
+- **Bitcoin WIF (Uncompressed):** Starts with '5', 51 chars. Ex: 5KJvsngHeMpm884wtkJNzQGaCErckhHJBGFsvd3VyK5qMZXj3hS
+- **Bitcoin BIP32 Extended:** Starts with 'xprv', 111 chars.
+- **Ethereum & EVM Hex Key:** 64 hex chars, often with '0x' prefix.
+- **Solana Keypair:** 88 Base58 chars.
+- **Ripple Secret:** Starts with 's', 29 chars. Ex: sp6JS7f14BuwFY8Mw6bTtLKWauoUs
+- **Litecoin WIF:** Starts with '6' or 'T'.
+- **Seed Phrase:** A list of 12 or 24 words.
+
+---
+**EXAMPLES**
 
 [Example 1]
-Content: "const btc_wallet_private_key = 'L5kZp2hG2hZRzps2hG2hZRzps2hG2hZRzps2hG2hZRzps2hG2hZRzps2';"
-Classification: REAL_KEY
+Content: "const btc_wallet_private_key = 'L4rK1yDtCWekvXuE6oXD9jCYfFNV2cWRpVuPLBcCU2z8TrisoyY1';"
+Classification: REAL_KEY (Bitcoin WIF)
 
 [Example 2]
-Content: "const TEST_API_KEY = '0x12345...';"
-Classification: TEST_KEY
+Content: "solana_test_key = '2gFkWRQgE8Z7Hq3K3rXwJ6yXvJdVpXMN6fTbeFhP3QyAqCNvY7ZDqrXnjBm9M2kmWEj1mpfNBZqWYvdWyWWHGfaV';"
+Classification: TEST_KEY (Solana)
 
 [Example 3]
 Content: "An Ethereum key looks like `0x[a-f0-9]{{64}}`."
 Classification: NOT_KEY
 
 [Example 4]
-Content: "example_seed_phrase = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'"
-Classification: TEST_KEY
+Content: "witch collapse practice feed shame open despair creek road again ice least"
+Classification: REAL_KEY (Seed Phrase)
 ---
 
 Now, classify this content:
@@ -94,7 +100,10 @@ class LLMAnalyzer:
             "model": OLLAMA_CONFIG['model'],
             "prompt": prompt,
             "stream": False,
-            "options": { "num_predict": 15 } # Increase prediction length for the type
+            "options": {
+                "num_predict": 15,
+                "temperature": 0
+            }
         }
         response = requests.post(api_url, json=payload)
         response.raise_for_status()

@@ -27,6 +27,7 @@ def run_accuracy_test():
         ("tests/samples/real_keys/litecoin_key.txt", "REAL_KEY"),
         ("tests/samples/real_keys/multiline_seed_phrase.md", "REAL_KEY"),
         ("tests/samples/real_keys/real_seed_phrase.txt", "REAL_KEY"),
+        ("tests/samples/real_keys/bip32_key.txt", "REAL_KEY"),
         ("tests/samples/test_keys/unit_test_with_fake_seed.py", "TEST_KEY"),
         ("tests/samples/test_keys/example_keys.txt", "TEST_KEY"),
         ("tests/samples/no_keys/documentation_about_keys.md", "NOT_KEY"),
@@ -47,7 +48,9 @@ def run_accuracy_test():
         print(f"\n-> Testing: {filepath} (Expected contains: {expected})")
         classification = analyzer.classify_file(content)
         
-        if expected in classification:
+        # Be flexible with the output, as some models add extra text.
+        # We just care that the core classification is present.
+        if expected in classification.replace('\\', ''):
             print(f"  {Colors.OKGREEN}Correct!{Colors.ENDC} (Got: {classification})")
             correct_predictions += 1
         else:

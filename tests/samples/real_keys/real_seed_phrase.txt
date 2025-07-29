@@ -1,4 +1,4 @@
 # This file contains a real 12-word BIP-39 seed phrase.
 # The local analyzer should detect this.
-
+ 
 witch collapse practice feed shame open despair creek road again ice least 

@@ -1,4 +1,4 @@
 # This file contains a long sentence with more than 12 words, but they are not from the BIP-39 list.
 # The local analyzer should NOT detect this as a seed phrase.
-
+ 
 This is just a regular sentence that happens to be quite long, and we need to make sure our scanner doesn't accidentally flag it as something it is not. 

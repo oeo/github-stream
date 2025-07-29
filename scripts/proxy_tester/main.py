@@ -1,6 +1,17 @@
 import argparse
 import re
 from urllib.parse import urlparse, parse_qs
+import signal
+import sys
+import time
+
+def signal_handler(sig, frame):
+    print(f"Caught signal {sig}, initiating graceful shutdown...")
+    # Perform cleanup operations here (e.g., close files, database connections, terminate threads)
+    sys.exit(0) # Exit cleanly after cleanup
+
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler) # Also handle Ctrl+C
 
 class Colors:
     """ANSI color codes for terminal output."""
