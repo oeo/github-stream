@@ -1,15 +1,16 @@
 ```
 ## @todo
-- [ ] balance check
-    - [ ] add secret handler/transformer
-    - [ ] roll this into balance checker for individual chains
-    - [ ] test with different llm models
 - [ ] correct filesize output bug in logs
 - [ ] improve log locations (centralize them and make them more useful)
-- [ ] reduce false positives
-- [ ] ensure we are only digesting the most recent commits possible
-- [ ] scale
-    - [ ] add token rotation or some other circumvention for rate limitations
+- [x] reduce false positives
+    - [x] add more llm providers
+        - [x] ollama
+        - [x] huggingface
+        - [x] gemma32b (accuracy), mistral8b (balance)
+- [x] ensure we are only digesting the most recent commits possible
+- [x] scale
+    - [x] add token rotation or some other circumvention for rate limitations
+     - note: 30s interval setting fixed this
 ```
 
 ---
