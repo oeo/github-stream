@@ -172,9 +172,18 @@ class Analyzer:
     def __init__(self):
         # A comprehensive library of regex patterns for specific key types.
         self.patterns = {
-            "BITCOIN_WIF_COMPRESSED": re.compile(r"[KL][1-9A-HJ-NP-Za-km-z]{51}"),
+            "BITCOIN_WIF_COMPRESSED": re.compile(r"\b[KL][1-9A-HJ-NP-Za-km-z]{51}\b"),
             "BITCOIN_WIF_UNCOMPRESSED": re.compile(r"5[1-9A-HJ-NP-Za-km-z]{50}"),
             "ETHEREUM_HEX_KEY": re.compile(r"(?:0x)?[a-fA-F0-9]{64}"),
+            
+            # dotfile-specific patterns
+            "SSH_PRIVATE_KEY": re.compile(r"-----BEGIN (?:RSA|DSA|EC|OPENSSH) PRIVATE KEY-----"),
+            "AWS_ACCESS_KEY": re.compile(r"(?:AKIA|ASIA|ABIA|ACCA)[0-9A-Z]{16}"),
+            "AWS_SECRET_KEY": re.compile(r"(?:aws_secret_access_key|AWS_SECRET_ACCESS_KEY)\s*=\s*[\w/+=]{40}"),
+            "GITHUB_TOKEN": re.compile(r"(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{36,255}"),
+            "NPM_TOKEN": re.compile(r"npm_[A-Za-z0-9]{36}"),
+            "BASIC_AUTH": re.compile(r"(?:https?://)?[\w\-\.]+:[\w\-\.]+@[\w\-\.]+"),
+            "API_KEY_GENERIC": re.compile(r"(?i)(?:api[_\-]?key|apikey|api_token|access[_\-]?token)\s*[:=]\s*['\"]?([a-zA-Z0-9\-_]{20,})", re.IGNORECASE),
         }
 
     def find_potential_leaks(self, content):
