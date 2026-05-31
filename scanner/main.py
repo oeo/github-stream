@@ -38,6 +38,9 @@ signal.signal(signal.SIGINT, signal_handler)
 skip_repo = threading.Event()
 llm_analysis_queue = Queue()
 
+# key types confirmed by regex alone - logged directly, bypassing LLM verification
+DIRECT_DETECTION_KEYS = {"ANTHROPIC_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY"}
+
 class Colors:
     """ansi color codes for terminal output."""
     HEADER = '\033[95m'
@@ -288,13 +291,24 @@ def process_event(gh, event_data, analyzer, verbose, token_manager, token, worke
 
                         if potential_leaks:
                             snippets = []
+                            direct_detections = []
                             for key_type, line_num, line in potential_leaks:
-                                if key_type != "SEED_PHRASE":
+                                if key_type in DIRECT_DETECTION_KEYS:
+                                    direct_detections.append({
+                                        "classification": key_type,
+                                        "line_num": line_num,
+                                        "line": line
+                                    })
+                                    log_detection(key_type, file_data['filename'], line_num, line.strip(), file_data['raw_url'], true_file_size)
+                                elif key_type != "SEED_PHRASE":
                                     snippets.append({
                                         'snippet': line.strip(),
                                         'line_num': line_num,
                                         'line': line
                                     })
+
+                            if direct_detections:
+                                save_leaked_file(file_data['filename'], decoded_content, direct_detections, file_data['raw_url'], true_file_size)
 
                             if snippets:
                                 llm_analysis_queue.put({

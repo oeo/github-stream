@@ -184,6 +184,11 @@ class Analyzer:
             "NPM_TOKEN": re.compile(r"npm_[A-Za-z0-9]{36}"),
             "BASIC_AUTH": re.compile(r"(?:https?://)?[\w\-\.]+:[\w\-\.]+@[\w\-\.]+"),
             "API_KEY_GENERIC": re.compile(r"(?i)(?:api[_\-]?key|apikey|api_token|access[_\-]?token)\s*[:=]\s*['\"]?([a-zA-Z0-9\-_]{20,})", re.IGNORECASE),
+
+            # LLM provider keys - distinctive prefixes, regex is high-confidence (no LLM needed)
+            "ANTHROPIC_API_KEY": re.compile(r"sk-ant-(?:api03|admin01)-[A-Za-z0-9\-_]{80,}"),
+            "OPENROUTER_API_KEY": re.compile(r"sk-or-v1-[a-f0-9]{64}"),
+            "OPENAI_API_KEY": re.compile(r"sk-(?:proj|svcacct|admin)-[A-Za-z0-9\-_]{20,}|sk-[A-Za-z0-9]{48}"),
         }
 
     def find_potential_leaks(self, content):

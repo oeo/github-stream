@@ -5,6 +5,8 @@ if LLM_PROVIDER == "huggingface":
     from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
     import torch
     from scanner.config import MODEL_CONFIGS, LLM_MODEL_KEY, HUGGING_FACE_TOKEN
+elif LLM_PROVIDER == "openrouter":
+    from scanner.config import OPENROUTER_CONFIG
 else: # ollama
     from scanner.config import OLLAMA_CONFIG
 
@@ -55,6 +57,8 @@ class LLMAnalyzer:
         self.verbose = verbose
         if LLM_PROVIDER == "huggingface":
             self._init_huggingface()
+        elif LLM_PROVIDER == "openrouter":
+            self._init_openrouter()
         elif LLM_PROVIDER == "ollama":
             self._init_ollama()
         
@@ -83,6 +87,12 @@ class LLMAnalyzer:
             print("Please ensure Ollama is running.")
             exit(1)
 
+    def _init_openrouter(self):
+        if not OPENROUTER_CONFIG.get('api_key'):
+            print("Error: OpenRouter API key is missing.")
+            print("Set the OPENROUTER_API_KEY env var or fill in api_key in scanner/config.py.")
+            exit(1)
+
     def _classify_with_huggingface(self, prompt):
         generation_args = {
             "max_new_tokens": 15,
@@ -109,10 +119,28 @@ class LLMAnalyzer:
         response.raise_for_status()
         return response.json()['response'].strip()
 
+    def _classify_with_openrouter(self, prompt):
+        api_url = f"{OPENROUTER_CONFIG['host']}/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {OPENROUTER_CONFIG['api_key']}",
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "model": OPENROUTER_CONFIG['model'],
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0,
+            "max_tokens": 15,
+        }
+        response = requests.post(api_url, headers=headers, json=payload, timeout=30)
+        response.raise_for_status()
+        return response.json()['choices'][0]['message']['content'].strip()
+
     def classify_snippet(self, snippet):
         prompt = PROMPT_TEMPLATE.format(code_snippet=snippet)
         if LLM_PROVIDER == "huggingface":
             classification = self._classify_with_huggingface(prompt)
+        elif LLM_PROVIDER == "openrouter":
+            classification = self._classify_with_openrouter(prompt)
         else: # ollama
             classification = self._classify_with_ollama(prompt)
         
